@@ -221,9 +221,9 @@
     } // https://gist.github.com/maruf-nc/5625869
   });
 
-  app.controller('ObjectCtrl', ['$scope', '$routeParams', '$location', '$sce', 'objects', 'notes',
-    function($scope, $routeParams, $location, $sce, objects, notes) {
-      $scope.id = $routeParams.id
+  app.controller('ObjectCtrl', ['$scope', '$routeParams', '$location', '$sce', 'objects', 'notes', '$rootScope',
+    function($scope, $routeParams, $location, $sce, objects, notes, $rootScope) {
+      $rootScope.lastObjectId = $scope.id = $routeParams.id
       objects().then(function(data) {
         $scope.json = data[$scope.id]
         $scope.json.trustedDescription = $sce.trustAsHtml($scope.json.description)
@@ -393,11 +393,32 @@
     }
   ])
 
-  app.controller('MainCtrl', ['$scope', '$routeParams', 'objects',
-    function($scope, $routeParams, objects) {
+  app.controller('MainCtrl', ['$scope', '$routeParams', 'objects', '$timeout', '$rootScope',
+    function($scope, $routeParams, objects, $timeout, $rootScope) {
+      var pickRandomObject = function(index) {
+        var maxIndex = $scope.objects.ids.length-1,
+            random = Math.floor(Math.random()*maxIndex),
+            moddedIndex = index < 0 ? maxIndex : index % (maxIndex+1)
+
+        $scope.featuredId = $scope.objects.ids[moddedIndex >= 0 ? moddedIndex : random]
+        $scope.featured = $scope.objects[$scope.featuredId]
+        $scope.$$phase || $scope.$apply()
+        // $scope.nextChange = $timeout(pickRandomObject, 10000)
+      }
+      window.$scope = $scope
+      window.$rootScope = $rootScope
+
       objects().then(function(data) {
         $scope.objects = data
+        var lastIndex = $scope.objects.ids.lastIndexOf(parseInt($rootScope.lastObjectId))
+        pickRandomObject(lastIndex)
       })
+
+      $scope.step = function(direction) {
+        $timeout.cancel($scope.nextChange)
+        var next = $scope.objects.ids.lastIndexOf($scope.featuredId) + direction
+        pickRandomObject(next)
+      }
     }
   ])
 

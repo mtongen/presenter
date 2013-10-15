@@ -525,7 +525,6 @@ function makeSwipeDirective(directiveName, direction, eventName) {
 
       $swipe.bind(element, {
         'start': function(coords) {
-          alert('swipe start')
           startCoords = coords;
           valid = true;
         },

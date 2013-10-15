@@ -1,7 +1,18 @@
-<ul id="cover">
-  <li ng-repeat="id in objects.ids">
-    <a href="#/o/{{id}}">
-      <img ng-src="http://api.artsmia.org/images/{{id}}/300/small.jpg">
+<div ng-swipe-left="step(1)" ng-swipe-right="step(-1)">
+  <figure class="featured" ng-if="featuredId">
+    <a href="#/o/{{featuredId}}" style="background-image: url(http://api.artsmia.org/images/{{featuredId}}/600/medium.jpg);">
+      <!-- <img ng-src="http://api.artsmia.org/images/{{featuredId}}/600/medium.jpg"> -->
     </a>
-  </li>
-</ul>
+    <figcaption>
+      <strong ng-bind="featured.title"></strong>
+    </figcaption>
+  </figure>
+
+  <ul id="cover">
+    <li ng-repeat="id in objects.ids">
+      <a href="#/o/{{id}}">
+        <img ng-src="http://api.artsmia.org/images/{{id}}/300/small.jpg">
+      </a>
+    </li>
+  </ul>
+</div>
